@@ -12,6 +12,10 @@ public class DisplayLocation extends AppCompatActivity {
         setContentView(R.layout.activity_display_location);
 
         TextView tvCurrent = findViewById(R.id.tv_display_currentMap);
-
+        String address = getIntent().getStringExtra("KEY_ADDRESS");
+//        String city = getIntent().getStringExtra("KEY_CITY");
+//        String state = getIntent().getStringExtra("KEY_STATE");
+//        String country = getIntent().getStringExtra("KEY_COUNTRY");
+        tvCurrent.setText(address);
     }
 }

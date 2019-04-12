@@ -14,6 +14,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -31,14 +33,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import pub.devrel.easypermissions.AppSettingsDialog;
-import pub.devrel.easypermissions.EasyPermissions;
-
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final String TAG = "MapsActivity";
 
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
+
+    Button btnCurrentLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +49,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        btnCurrentLocation = findViewById(R.id.btn_addCurrent);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
     }
@@ -70,27 +73,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onSuccess(Location location) {
                 LatLng sydney = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+                mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Current"));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
                 getgetLocationAddress(getApplicationContext(), location.getLatitude(), location.getLongitude());
             }
         });
     }
 
-    public  void getgetLocationAddress(Context context, double lat, double lng){
+    public  void getgetLocationAddress(final Context context, double lat, double lng){
         Geocoder geocoder;
         List<Address> addresses;
 
         geocoder = new Geocoder(context, Locale.getDefault());
         try {
             addresses = geocoder.getFromLocation(lat, lng, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-            String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-            String city = addresses.get(0).getLocality();
-            String state = addresses.get(0).getAdminArea();
-            String country = addresses.get(0).getCountryName();
+            final String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+            final String city = addresses.get(0).getLocality();
+            final String state = addresses.get(0).getAdminArea();
+            final String country = addresses.get(0).getCountryName();
             // System.out.println("SDK_DATA"+address+"..."+city +country);
             Log.d(TAG, "getgetLocationAddress: " + address + ", " + city + ", " + state + ", " + country);
             Toast.makeText(context, "getgetLocationAddress: " + address + ", " + city + ", " + state + ", " + country, Toast.LENGTH_SHORT).show();
+            btnCurrentLocation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i =new Intent(context, DisplayLocation.class);
+                    i.putExtra("KEY_ADDRESS", address);
+                    i.putExtra("KEY_CITY", city);
+                    i.putExtra("KEY_STATE", state);
+                    i.putExtra("KEY_COUNTRY", country);
+                    startActivity(i);
+                }
+            });
             //Here address set to your textview
         } catch (IOException e) {
             e.printStackTrace();
