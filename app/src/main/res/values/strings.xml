@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">GMap Demo</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="the_text_will_be_showed_here">The text will be showed here</string>
+</resources>
